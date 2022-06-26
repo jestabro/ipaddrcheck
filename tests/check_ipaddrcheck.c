@@ -405,8 +405,8 @@ END_TEST
 
 START_TEST (test_is_ipv4_range)
 {
-    //char* good_range_str = "192.0.2.0-192.0.2.10";
-    int res = is_ipv4_range("192.0.2.0-192.0.2.10", 0);
+    char* good_range_str = "192.0.2.0-192.0.2.10";
+    int res = is_ipv4_range(good_range_str, 0);
     ck_assert_int_eq(res, RESULT_SUCCESS);
 }
 END_TEST

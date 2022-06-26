@@ -580,7 +580,7 @@ int is_ipv4_range(char* range_str, int verbose)
 
             if( left_in_addr->s_addr < right_in_addr->s_addr )
             {
-                result = RESULT_SUCCESS;;
+                result = RESULT_SUCCESS;
             }
             else
             {
