@@ -552,8 +552,14 @@ int is_ipv4_range(char* range_str, int verbose)
     {
         /* We already know that the string has two hyphen-separated parts,
            so we can cheat a bit instead of handling the genral case with arbitrary numbers of tokens. */
-        char* left = strtok(range_str, "-");
-        char* right = strtok(NULL, "-");
+
+        char range_arr[32];
+        char* left;
+        char* right;
+
+        strncpy(range_arr, range_str, 31);
+        left = strtok(range_arr, "-");
+        right = strtok(NULL, "-");
 
         if( !is_ipv4_single(left) )
         {
