@@ -533,15 +533,15 @@ int is_ipv4_range(char* range_str, int verbose)
 {
     int result = RESULT_SUCCESS;
 
-    int offsets[1];
+    int offsets[9];
     pcre *re;
     int rc;
     const char *error;
     int erroffset;
 
-    re = pcre_compile("^([0-9\\.]+\\-[0-9\\.]+)$",
+    re = pcre_compile("^([0-9\\.]+)\\-([0-9\\.]+)$",
                       0, &error, &erroffset, NULL);
-    rc = pcre_exec(re, NULL, range_str, strlen(range_str), 0, 0, offsets, 1);
+    rc = pcre_exec(re, NULL, range_str, strlen(range_str), 0, 0, offsets, 9);
 
     if( rc < 0 )
     {
@@ -550,18 +550,19 @@ int is_ipv4_range(char* range_str, int verbose)
     }
     else
     {
-        /* We already know that the string has two hyphen-separated parts,
-           so we can cheat a bit instead of handling the genral case with arbitrary numbers of tokens. */
-
-        char range_arr[32];
         char* left;
         char* right;
+        int rc1, rc2;
 
-        strncpy(range_arr, range_str, 31);
-        left = strtok(range_arr, "-");
-        right = strtok(NULL, "-");
+        rc1 = pcre_get_substring(range_str, offsets, rc, 1, (const char**)&left);
+        rc2 = pcre_get_substring(range_str, offsets, rc, 2, (const char**)&right);
 
-        if( !is_ipv4_single(left) )
+        if ( rc1 < 0 || rc2 < 0 )
+        {
+            // print something
+            result = RESULT_FAILURE;
+        }
+        else if( !is_ipv4_single(left) )
         {
             if( verbose )
             {
@@ -600,7 +601,10 @@ int is_ipv4_range(char* range_str, int verbose)
             cidr_free(left_addr);
             cidr_free(right_addr);
         }
+        pcre_free_substring((const char*)left);
+        pcre_free_substring((const char*)right);
     }
 
+    pcre_free(re);
     return(result);
 }
